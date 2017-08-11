@@ -1,0 +1,94 @@
+diff --git a/modules/rtpproxy/rtpproxy.c b/modules/rtpproxy/rtpproxy.c
+index c3f39ec..6a1686a 100644
+--- a/modules/rtpproxy/rtpproxy.c
++++ b/modules/rtpproxy/rtpproxy.c
+@@ -163,6 +163,8 @@
+  *              (Min Wang/BASIS AudioNet - ported from SER)
+  * 2010-08-05 Core SDP parser integrated into nathelper (osas)
+  * 2010-10-08 Removal of deprecated force_rtp_proxy and swap flag (osas)
++ * 2016-11-16 New functions stop_recording() allowing to stop a previous started
++ *             recording with start_recording(). Requires patched rtpproxy.
+  */
+ 
+ #include <sys/types.h>
+@@ -288,6 +290,7 @@ static int unforce_rtp_proxy1_f(struct sip_msg *, char *, char *);
+ static int unforce_rtp_proxy(struct sip_msg *, char *);
+ static int force_rtp_proxy(struct sip_msg *, char *, char *, int, int);
+ static int start_recording_f(struct sip_msg *, char *, char *);
++static int stop_recording_f(struct sip_msg *, char *, char *);
+ static int rtpproxy_answer1_f(struct sip_msg *, char *, char *);
+ static int rtpproxy_answer2_f(struct sip_msg *, char *, char *);
+ static int rtpproxy_offer1_f(struct sip_msg *, char *, char *);
+@@ -378,6 +381,9 @@ static cmd_export_t cmds[] = {
+ 	{"start_recording",    (cmd_function)start_recording_f,      0,
+ 		0, 0,
+ 		ANY_ROUTE },
++	{"stop_recording",    (cmd_function)stop_recording_f,      0,
++		0, 0,
++		ANY_ROUTE },
+ 	{"rtpproxy_offer",	(cmd_function)rtpproxy_offer1_f,     0,
+ 		0, 0,
+ 		ANY_ROUTE},
+@@ -2973,6 +2979,62 @@ static int start_recording_f(struct sip_msg* msg, char *foo, char *bar)
+ 	return 1;
+ }
+ 
++static int stop_recording_f(struct sip_msg* msg, char *foo, char *bar)
++{
++	int nitems;
++	str callid = {0, 0};
++	str from_tag = {0, 0};
++	str to_tag = {0, 0};
++	struct rtpp_node *node;
++	struct iovec v[1 + 4 + 3] = {{NULL, 0}, {"F", 1}, {" ", 1}, {NULL, 0}, {" ", 1}, {NULL, 0}, {" ", 1}, {NULL, 0}};
++	                             /* 1 */   /* 2 */   /* 3 */    /* 4 */   /* 5 */    /* 6 */   /* 1 */
++
++	if (get_callid(msg, &callid) == -1 || callid.len == 0) {
++		LM_ERR("can't get Call-Id field\n");
++		return -1;
++	}
++
++	if (get_to_tag(msg, &to_tag) == -1) {
++		LM_ERR("can't get To tag\n");
++		return -1;
++	}
++
++	if (get_from_tag(msg, &from_tag) == -1 || from_tag.len == 0) {
++		LM_ERR("can't get From tag\n");
++		return -1;
++	}
++
++	if(msg->id != current_msg_id){
++		selected_rtpp_set = default_rtpp_set;
++	}
++
++	STR2IOVEC(callid, v[3]);
++	STR2IOVEC(from_tag, v[5]);
++	STR2IOVEC(to_tag, v[7]);
++	node = select_rtpp_node(callid, 1);
++	if (!node) {
++		LM_ERR("no available proxies\n");
++		return -1;
++	}
++	set_rtp_inst_pvar(msg, &node->rn_url);
++
++	nitems = 8;
++	if (msg->first_line.type == SIP_REPLY) {
++		if (to_tag.len == 0)
++			return -1;
++		STR2IOVEC(to_tag, v[5]);
++		STR2IOVEC(from_tag, v[7]);
++	} else {
++		STR2IOVEC(from_tag, v[5]);
++		STR2IOVEC(to_tag, v[7]);
++		if (to_tag.len <= 0)
++			nitems = 6;
++	}
++	send_rtpp_command(node, v, nitems);
++
++	return 1;
++}
++
+ /*
+  * Returns the current RTP-Statistics from the RTP-Proxy
+  */
