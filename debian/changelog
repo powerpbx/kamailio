@@ -1,8 +1,14 @@
-ivozprovider-kamailio (1.6.0) UNRELEASED; urgency=medium
+ivozprovider-kamailio (1.7.0) UNRELEASED; urgency=medium
+
+  * Version bump to 1.7.0
+
+ -- Irontec IvozProvider Team <dev@lists-ivozprovider.irontec.com>  Mon, 05 Mar 2018 19:18:17 +0100
+
+ivozprovider-kamailio (1.6.0) stable; urgency=medium
 
   * Version bump to 1.6.0
 
- -- Irontec IvozProvider Team <dev@lists-ivozprovider.irontec.com> Thu, 27 Jul 2017 18:27:22 +0200
+ -- Irontec IvozProvider Team <dev@lists-ivozprovider.irontec.com>  Mon, 05 Mar 2018 19:18:03 +0100
 
 ivozprovider-kamailio (1.5.0) stable; urgency=medium
 
