@@ -36,7 +36,7 @@ EXTRA_EXCLUDED_MODULES=bdb dbtext oracle pa iptrtpproxy mi_xmlrpc
 PACKAGE_GROUPS=mysql xml redis json tls websocket presence extra
 
 # module groups to be packaged onto kamailio-extra-modules
-EXTRA_GROUPS=ev
+EXTRA_GROUPS=ev jansson
 
 # name of libdir in the path for libraries (e.g., lib for 32b, lib64 for 64b)
 LIBDIR ?= lib/$(DEB_HOST_MULTIARCH)

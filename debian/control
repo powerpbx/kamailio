@@ -167,4 +167,4 @@ Description: extra modules for Kamailio
  proxy server. Written entirely in C, Kamailio can handle thousands calls
  per second even on low-budget hardware.
  .
- This package provides: evapi
+ This package provides: evapi, jansson
