@@ -9,7 +9,7 @@ Build-Depends: bison,
                docbook-xml,
                dpkg-dev (>= 1.16.1.1),
                flex,
-               libmysqlclient-dev,
+               libmariadbclient-dev,
                libcurl4-openssl-dev,
                libexpat1-dev,
                libhiredis-dev (>= 0.10.0),
@@ -80,7 +80,7 @@ Multi-Arch: same
 Replaces: kamailio-mysql-modules
 Conflicts: kamailio-mysql-modules
 Depends: ivozprovider-kamailio (= ${binary:Version}),
-         mysql-client | virtual-mysql-client,
+         mariadb-client | virtual-mysql-client,
          ${misc:Depends},
          ${shlibs:Depends}
 Description: IVOZ Provider - Kamailio 5.1 - MySQL database connectivity module for kamailio
