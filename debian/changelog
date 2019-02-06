@@ -1,4 +1,4 @@
-ivozprovider-kamailio (2.9~5.1.2-ppx1) UNRELEASED; urgency=medium
+ivozprovider-kamailio (1:2.9~5.1.2-ppx1) UNRELEASED; urgency=medium
 
   * Version change
   * Replace mysql dependency with mariadb
